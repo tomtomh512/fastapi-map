@@ -1,0 +1,6 @@
+.leaflet-container {
+    height: 100vh;
+    /* Window width - navbar width */
+    width: calc(100vw - 80px);
+    z-index: 0;
+}
