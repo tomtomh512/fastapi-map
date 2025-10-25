@@ -44,15 +44,21 @@ export default function App() {
             setUser({ id: null, username: null });
             return;
         }
+
         try {
             const response = await httpClient.get(
-                `${process.env.REACT_APP_SERVER_API_URL}/auth/verify-token/${token}`
+                `${import.meta.env.VITE_SERVER_API_URL}/verify-token/${token}`
             );
             setUser({ id: response.data.id, username: response.data.username });
+
         } catch {
+            const message = error.response?.data?.detail || "Token verification failed";
+            console.log(message);
+
             removeToken();
             setUser({ id: null, username: null });
         }
+
     }, []);
 
     useEffect(() => {

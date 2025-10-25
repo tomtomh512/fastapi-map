@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
-import { setToken } from "../utils/tokenUtils";
+import { setToken } from "../utils/tokenUtils.js"
 import "../styles/Authentication.css";
 
 export default function Login() {
@@ -16,14 +16,15 @@ export default function Login() {
         try {
             const formDetails = new URLSearchParams(form);
             const response = await httpClient.post(
-                `${import.meta.env.VITE_SERVER_API_URL}/auth/login`,
+                `${import.meta.env.VITE_SERVER_API_URL}/token`,
                 formDetails,
                 { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
             );
             setToken(response.data.access_token);
             navigate("/profile");
         } catch (error) {
-            console.log("Error logging in")
+            const message = error.response?.data?.detail || "Login failed";
+            alert(message);
         }
     };
 

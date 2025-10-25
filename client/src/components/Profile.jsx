@@ -49,7 +49,7 @@ export default function Profile(props) {
                     <Link to="/login" className="login-logout-button">
                         Login
                     </Link>
-                    <Link to="/register" className="register-link">
+                    <Link to="/register" className="login-register-back-link">
                         Register
                     </Link>
                 </>

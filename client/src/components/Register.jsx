@@ -24,7 +24,7 @@ export default function Register() {
         }
 
         try {
-            await httpClient.post(`${import.meta.env.VITE_SERVER_API_URL}/auth/register`, {
+            await httpClient.post(`${import.meta.env.VITE_SERVER_API_URL}/register`, {
                 username: form.username,
                 password: form.password,
             });
@@ -35,7 +35,7 @@ export default function Register() {
             loginData.append("password", form.password);
 
             const loginResponse = await httpClient.post(
-                `${import.meta.env.VITE_SERVER_API_URL}/auth/login`,
+                `${import.meta.env.VITE_SERVER_API_URL}/login`,
                 loginData,
                 {
                     headers: {
@@ -47,7 +47,8 @@ export default function Register() {
             setToken(loginResponse.data.access_token);
             navigate("/profile");
         } catch (error) {
-            console.log("Error registering");
+            const message = error.response?.data?.detail || "Register failed";
+            alert(message);
         }
     };
 
