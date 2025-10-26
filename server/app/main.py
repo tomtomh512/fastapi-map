@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -8,6 +8,12 @@ from app.models import User
 from app.database import SessionLocal, engine
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 app = FastAPI()
 
@@ -15,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"],
@@ -117,3 +123,60 @@ def verify_user_token(token: str, db: Session = Depends(get_db)):
         "username": user.username,
         "message": "Token is valid",
     }
+
+def search_query(query: str, lat: str, long: str, limit: int):
+    base_url = "https://api.geoapify.com/v1/geocode/search"
+    params = {
+        "text": query,
+        "bias": f"proximity:{long},{lat}",
+        "format": "json",
+        "limit": limit,
+        "apiKey": API_KEY,
+    }
+
+    response = requests.get(base_url, params=params)
+    data = response.json()
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Failed to fetch data")
+
+    results = []
+
+    if not data.get("results") or len(data.get("results")) == 0:
+        return results
+
+    for feature in data.get("results"):
+        name = feature.get("name") or feature.get("address_line1") or "Unknown"
+        address = feature.get("formatted")
+        lat = feature.get("lat")
+        lon = feature.get("lon")
+        place_id = feature.get("place_id")
+        category = feature.get("category")
+        confidence = feature.get("rank", {}).get("confidence", 0)
+        distance = feature.get("distance", 0)
+
+        score = confidence - (distance / 1000) / ((distance / 1000) + 1)
+
+        results.append({
+            "name": name,
+            "address": address,
+            "lat": lat,
+            "lon": lon,
+            "place_id": place_id,
+            "category": category,
+            "score": score
+        })
+
+    # Sort by score: lower is better (high confidence + close distance)
+    results.sort(key=lambda x: x["score"], reverse=True)
+
+    return results
+
+@app.get("/searchQuery")
+def search(
+        query: str = Query(...),
+        lat: str = Query(...),
+        long: str = Query(...),
+):
+    search_result = search_query(query, lat, long, 50)
+    return {"results": search_result}

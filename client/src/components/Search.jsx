@@ -29,7 +29,7 @@ export default function Search(props) {
         event.preventDefault();
 
         try {
-            const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/here/searchQuery`, {
+            const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
                 params: {
                     query: searchInput,
                     lat: userLocation.lat,
@@ -39,6 +39,8 @@ export default function Search(props) {
 
             setCurrentMarkers(response.data.results);
             setSearchResults(response.data.results);
+
+            console.log(searchResults);
 
         } catch (error) {
             console.error("Error fetching search results:", error);

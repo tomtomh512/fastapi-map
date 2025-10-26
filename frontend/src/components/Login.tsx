@@ -1,29 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
-import { setToken } from "../utils/tokenUtils.js"
+import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
 
-export default function Login() {
-    const [form, setForm] = useState({ username: "", password: "" });
-    const [alertMessage, setAlertMessage] = useState("");
+interface LoginForm {
+    username: string;
+    password: string;
+}
+
+const Login: React.FC = () => {
+    const [form, setForm] = useState<LoginForm>({ username: "", password: "" });
+    const [alertMessage, setAlertMessage] = useState<string>("");
     const navigate = useNavigate();
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const logInUser = async (e) => {
+    const logInUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         try {
-            const formDetails = new URLSearchParams(form);
-            const response = await httpClient.post(
+            const formDetails = new URLSearchParams();
+            formDetails.append("username", form.username);
+            formDetails.append("password", form.password);
+            const response = await httpClient.post<{ access_token: string }>(
                 `${import.meta.env.VITE_SERVER_API_URL}/token`,
                 formDetails,
                 { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
             );
+
             setToken(response.data.access_token);
             navigate("/profile");
-        } catch (error) {
-            const message = error.response?.data?.detail || "Login failed";
+
+        } catch (error: any) {
+            const message = error?.response?.data?.detail || "Login failed";
             setAlertMessage(message);
         }
     };
@@ -66,4 +78,6 @@ export default function Login() {
             </Link>
         </div>
     );
-}
+};
+
+export default Login;

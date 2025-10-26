@@ -1,21 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
 import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
 
-export default function Register() {
-    const [form, setForm] = useState({
+interface RegisterForm {
+    username: string;
+    password: string;
+    confirmPassword: string;
+}
+
+const Register: React.FC = () => {
+    const [form, setForm] = useState<RegisterForm>({
         username: "",
         password: "",
         confirmPassword: "",
     });
-    const [alertMessage, setAlertMessage] = useState("");
+
+    const [alertMessage, setAlertMessage] = useState<string>("");
     const navigate = useNavigate();
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const registerUser = async (e) => {
+    const registerUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (form.password !== form.confirmPassword) {
@@ -34,7 +43,7 @@ export default function Register() {
             loginData.append("username", form.username);
             loginData.append("password", form.password);
 
-            const loginResponse = await httpClient.post(
+            const loginResponse = await httpClient.post<{ access_token: string }>(
                 `${import.meta.env.VITE_SERVER_API_URL}/login`,
                 loginData,
                 {
@@ -46,8 +55,9 @@ export default function Register() {
 
             setToken(loginResponse.data.access_token);
             navigate("/profile");
-        } catch (error) {
-            const message = error.response?.data?.detail || "Register failed";
+
+        } catch (error: any) {
+            const message = error?.response?.data?.detail || "Register failed";
             setAlertMessage(message);
         }
     };
@@ -102,4 +112,6 @@ export default function Register() {
             </Link>
         </div>
     );
-}
+};
+
+export default Register;
