@@ -77,7 +77,7 @@ const Map: React.FC<MapProps> = ({
     };
 
     return (
-        <div className="map-container">
+        <div>
             <MapContainer
                 center={[userLocation.lat, userLocation.long]}
                 zoom={12}

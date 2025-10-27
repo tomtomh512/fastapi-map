@@ -1,0 +1,11 @@
+.idea/
+frontend/dist/
+frontend/.env
+server/.env
+server/.venv/
+server/venv/
+server/*.db
+venv/
+.env/
+.venv/
+env/
