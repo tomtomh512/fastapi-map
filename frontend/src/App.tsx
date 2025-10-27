@@ -14,7 +14,6 @@ import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
 
 const App: React.FC = () => {
-
     // Keep track of page inputs
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchResults, setSearchResults] = useState<Location[]>([]);
@@ -28,6 +27,23 @@ const App: React.FC = () => {
         lat: 40.730610,
         long: -73.935242,
     });
+
+    // Ask for location
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position: GeolocationPosition) => {
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation({
+                        lat: latitude,
+                        long: longitude,
+                    });
+                }
+            );
+        } else {
+            console.log("Geolocation not supported");
+        }
+    }, []);
 
     // Panel toggle
     const [showPanel, setShowPanel] = useState<boolean>(true);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
 import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
+import {getAxiosErrorMessage} from "../utils/axiosError.ts";
 
 interface LoginForm {
     username: string;
@@ -34,8 +35,8 @@ const Login: React.FC = () => {
             setToken(response.data.access_token);
             navigate("/profile");
 
-        } catch (error: any) {
-            const message = error?.response?.data?.detail || "Login failed";
+        } catch (error: unknown) {
+            const message = getAxiosErrorMessage(error);
             setAlertMessage(message);
         }
     };

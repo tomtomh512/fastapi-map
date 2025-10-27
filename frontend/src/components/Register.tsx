@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
 import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
+import {getAxiosErrorMessage} from "../utils/axiosError.ts";
 
 interface RegisterForm {
     username: string;
@@ -56,8 +57,8 @@ const Register: React.FC = () => {
             setToken(loginResponse.data.access_token);
             navigate("/profile");
 
-        } catch (error: any) {
-            const message = error?.response?.data?.detail || "Register failed";
+        } catch (error: unknown) {
+            const message = getAxiosErrorMessage(error);
             setAlertMessage(message);
         }
     };
