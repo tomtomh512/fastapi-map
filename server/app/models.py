@@ -8,6 +8,4 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
-# Create the database tables if they don't exist
-
 User.metadata.create_all(bind=engine)

@@ -63,8 +63,9 @@ const App: React.FC = () => {
         }
 
         try {
-            const response: AxiosResponse<User> = await httpClient.get(
-                `${import.meta.env.VITE_SERVER_API_URL}/verify-token/${token}`
+            const response: AxiosResponse<User> = await httpClient.post(
+                `${import.meta.env.VITE_SERVER_API_URL}/verify-token`,
+                { token }
             );
             setUser({
                 id: response.data.id,

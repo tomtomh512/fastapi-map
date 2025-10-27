@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Body
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
@@ -109,8 +109,11 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(status_code=403, detail="Token is invalid or expired")
 
-@app.get("/verify-token/{token}")
-def verify_user_token(token: str, db: Session = Depends(get_db)):
+@app.post("/verify-token")
+def verify_user_token(
+    token: str = Body(..., embed=True),
+    db: Session = Depends(get_db)
+):
     payload = verify_token(token)
     username = payload.get("sub")
 
