@@ -128,7 +128,7 @@ def search_query(query: str, lat: str, long: str, limit: int):
     base_url = "https://api.geoapify.com/v1/geocode/search"
     params = {
         "text": query,
-        "bias": f"proximity:{long},{lat}",
+        "bias": f"proximity:{long},{lat}|circle:{long},{lat},5000",
         "format": "json",
         "limit": limit,
         "apiKey": API_KEY,

@@ -29,6 +29,7 @@ const Search: React.FC<SearchProps> = ({
                                        }) => {
 
     const [message, setMessage] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         setSelectedLocation(undefined)
@@ -42,6 +43,7 @@ const Search: React.FC<SearchProps> = ({
     // Calls API, takes coordinates and search query
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
+        setLoading(true);
 
         try {
             const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
@@ -58,8 +60,17 @@ const Search: React.FC<SearchProps> = ({
 
         } catch (error) {
             console.error("Error fetching search results:", error);
+
+        } finally {
+            setLoading(false);
         }
     };
+
+    const clearSearchResults = (): void => {
+        setCurrentMarkers([]);
+        setSearchResults([]);
+        setSelectedLocation(undefined);
+    }
 
     // Lets 'Enter' act as submit button
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -93,7 +104,7 @@ const Search: React.FC<SearchProps> = ({
 
                 <button
                     type="button"
-                    onClick={() => setSearchInput("")}
+                    onClick={() => clearSearchResults()}
                 >
                     <img src={ExitIcon} alt="X" />
                 </button>
@@ -103,13 +114,16 @@ const Search: React.FC<SearchProps> = ({
                 </button>
             </form>
 
-            {searchResults.length === 0 ? (
-                <h3 className="no-results-message">Nothing to display</h3>
+            {loading ? (
+                <h3 className="results-message">Loading results...</h3>
+            ) : searchResults.length === 0 ? (
+                <h3 className="results-message">Nothing to display</h3>
             ) : (
                 <>
-          <span>
-            {searchResults.length} {searchResults.length === 1 ? "result" : "results"}
-          </span>
+                    <span>
+                        {searchResults.length}{" "}
+                        {searchResults.length === 1 ? "result" : "results"}
+                    </span>
                     {message && <p className="feedback-message">{message}</p>}
 
                     <Listings

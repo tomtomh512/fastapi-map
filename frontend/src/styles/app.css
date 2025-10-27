@@ -29,7 +29,7 @@ body {
     margin: 15px;
 }
 
-.no-results-message {
+.results-message {
     text-align: center;
     font-size: 1.5rem;
 }

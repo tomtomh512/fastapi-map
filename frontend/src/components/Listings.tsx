@@ -32,7 +32,7 @@ const Listings: React.FC<ListingsProps> = ({
             {listings.map((listing: Location, index: number) => (
                 <section
                     key={index}
-                    className="listing-card"
+                    className={`listing-card ${selectedLocation && listing.place_id == selectedLocation.place_id ? "selected" : ""}`}
                     ref={(ref: HTMLDivElement | null) => {
                         if (ref) listingRefs.current[listing.place_id] = ref;
                         else delete listingRefs.current[listing.place_id];

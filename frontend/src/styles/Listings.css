@@ -22,6 +22,10 @@
     margin: 12px auto;
 }
 
+.selected {
+    border: 2px solid black;
+}
+
 .listing-name {
     margin: 0;
     font-size: 1.5rem;
