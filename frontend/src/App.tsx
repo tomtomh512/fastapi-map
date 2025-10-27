@@ -91,7 +91,6 @@ const App: React.FC = () => {
                 <Routes>
                     <Route path="/" element={
                         <Search
-                            user={user}
                             setCurrentMarkers={setCurrentMarkers}
                             userLocation={userLocation}
                             selectedLocation={selectedLocation}

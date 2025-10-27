@@ -1,12 +1,12 @@
 import "../styles/Search.css";
 import React, {useEffect, useState} from "react";
-import type { User, Location, UserLocation } from "../types/types";
+import type { Location, UserLocation } from "../types/types";
 import httpClient from "../httpClient.tsx";
 import SearchIcon from "../assets/searchIcon.png";
 import ExitIcon from "../assets/exitIcon.png";
+import Listings from "./Listings.tsx";
 
 interface SearchProps {
-    user: User | null;
     setCurrentMarkers: React.Dispatch<React.SetStateAction<Location[]>>;
     userLocation: UserLocation;
     selectedLocation?: Location;
@@ -18,7 +18,6 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({
-                                           user,
                                            setCurrentMarkers,
                                            userLocation,
                                            selectedLocation,
@@ -55,8 +54,8 @@ const Search: React.FC<SearchProps> = ({
 
             setCurrentMarkers(response.data.results);
             setSearchResults(response.data.results);
+            setSelectedLocation(undefined);
 
-            console.log(response.data.results);
         } catch (error) {
             console.error("Error fetching search results:", error);
         }
@@ -114,12 +113,9 @@ const Search: React.FC<SearchProps> = ({
                     {message && <p className="feedback-message">{message}</p>}
 
                     <Listings
-                        user={user}
                         listings={searchResults}
-                        setListings={setSearchResults}
                         selectedLocation={selectedLocation}
                         setSelectedLocation={setSelectedLocation}
-                        setMessage={setMessage}
                     />
                 </>
             )}

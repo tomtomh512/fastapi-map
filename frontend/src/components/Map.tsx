@@ -10,7 +10,6 @@ import {
     Popup,
 } from "react-leaflet";
 import { Icon, Marker as LeafletMarker } from "leaflet";
-import httpClient from "../httpClient";
 import pinBlue from "../assets/pin-blue.png";
 import pinRed from "../assets/pin-red.png";
 import type { Location, UserLocation } from "../types/types";
@@ -32,6 +31,30 @@ const Map: React.FC<MapProps> = ({
                                      setSelectedLocation,
                                      togglePanelTrue,
                                  }) => {
+
+    const markerRefs = useRef<Record<string, LeafletMarker>>( {} );
+
+    useEffect(() => {
+        if (selectedLocation?.place_id && markerRefs.current[selectedLocation.place_id]) {
+            markerRefs.current[selectedLocation.place_id].openPopup();
+        }
+    }, [selectedLocation]);
+
+    const handleClick = async (listing: Location) => {
+        togglePanelTrue();
+
+        setSelectedLocation(listing);
+    };
+
+    const customIcon = new Icon({
+        iconUrl: pinBlue,
+        iconSize: [38, 38],
+    });
+
+    const customHighlightedIcon = new Icon({
+        iconUrl: pinRed,
+        iconSize: [38, 38],
+    });
 
     const ChangeView: React.FC<{ center: [number, number] }> = ({ center }) => {
         const map = useMap();
@@ -63,6 +86,27 @@ const Map: React.FC<MapProps> = ({
                 <ZoomControl position="bottomright" />
                 <ChangeView center={[userLocation.lat, userLocation.long]} />
                 <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                {markers.map((marker: Location, index: number) => (
+                    <Marker
+                        key={index}
+                        position={[marker.latitude, marker.longitude]}
+                        icon={(selectedLocation && marker.place_id === selectedLocation.place_id) ? customHighlightedIcon : customIcon}
+                        zIndexOffset={(selectedLocation && marker.place_id === selectedLocation.place_id) ? 1000 : 0 }
+                        eventHandlers={{
+                            click: () => handleClick(marker),
+                        }}
+                        ref={(ref) => {
+                            if (ref) markerRefs.current[marker.place_id] = ref;
+                        }}
+                    >
+
+                        <Popup>
+                            <h3>{marker.name}</h3>
+                        </Popup>
+
+                    </Marker>
+                ))}
 
             </MapContainer>
         </div>

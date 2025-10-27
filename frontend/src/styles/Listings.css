@@ -18,6 +18,10 @@
     border: 2px solid black;
 }
 
+.listing-card p {
+    margin: 12px auto;
+}
+
 .listing-name {
     margin: 0;
     font-size: 1.5rem;

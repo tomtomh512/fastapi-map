@@ -160,11 +160,11 @@ def search_query(query: str, lat: str, long: str, limit: int):
         results.append({
             "name": name,
             "address": address,
-            "lat": lat,
-            "lon": lon,
+            "latitude": float(lat) if lat is not None else 0.0,
+            "longitude": float(lon) if lon is not None else 0.0,
             "place_id": place_id,
             "category": category,
-            "score": score
+            "score": float(score)
         })
 
     # Sort by score: lower is better (high confidence + close distance)

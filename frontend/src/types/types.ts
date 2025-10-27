@@ -11,9 +11,9 @@ export type UserLocation = {
 export type Location = {
     name: string,
     address: string,
-    latitude: string | number,
-    longitude: string | number,
+    latitude: number,
+    longitude: number,
     place_id: string,
-    category_id: string,
-    score: string | number,
+    category: string,
+    score: number,
 }
