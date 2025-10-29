@@ -54,7 +54,7 @@ const Profile: React.FC<ProfileProps> = ({
 
         try {
             await httpClient.post(
-                `${import.meta.env.SERVER_API_URL}/lists`,
+                `${import.meta.env.VITE_SERVER_API_URL}/lists`,
                 { name: addListInput },
                 {
                     headers: {

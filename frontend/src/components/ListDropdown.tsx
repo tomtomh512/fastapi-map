@@ -29,7 +29,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
         try {
 
             const response: AxiosResponse<ListStatus[]> = await httpClient.get<ListStatus[]>(
-                `${import.meta.env.SERVER_API_URL}/lists/check-location/${location.place_id}`,
+                `${import.meta.env.VITE_SERVER_API_URL}/lists/check-location/${location.place_id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -49,7 +49,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
             if (added) {
                 // remove location from list
                 await httpClient.delete(
-                    `${import.meta.env.SERVER_API_URL}/lists/${listId}/locations/${location.place_id}`,
+                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}/locations/${location.place_id}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -58,7 +58,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
             } else {
                 // add location to list
                 await httpClient.post(
-                    `${import.meta.env.SERVER_API_URL}/lists/${listId}/locations`,
+                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}/locations`,
                     location,
                     {
                         headers: { Authorization: `Bearer ${token}` },

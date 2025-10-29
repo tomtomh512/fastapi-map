@@ -26,8 +26,9 @@ const Login: React.FC = () => {
             const formDetails = new URLSearchParams();
             formDetails.append("username", form.username);
             formDetails.append("password", form.password);
+
             const response = await httpClient.post<{ access_token: string }>(
-                `${import.meta.env.SERVER_API_URL}/token`,
+                `${import.meta.env.VITE_SERVER_API_URL}/token`,
                 formDetails,
                 { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
             );

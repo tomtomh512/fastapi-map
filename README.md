@@ -2,7 +2,7 @@
 
 A FastAPI server managing JWT authentication, REST API calls, and CRUD operations, supporting a React frontend
 
-<img src="assets/picture.png">
+<img src="assets/thumbnail.png">
 
 ---
 
@@ -25,36 +25,6 @@ A FastAPI server managing JWT authentication, REST API calls, and CRUD operation
 
 ---
 
-## Server Endpoints
-
-### Auth
-```POST /register```: Register a new user account
-
-```POST /token```: Log in and obtain an access token
-
-```POST /verify-token```: Verify the validity of a user's JSON Web Token
-
-### Lists
-```GET /lists```: Retrieves all lists belonging to the authenticated user
-
-```GET /lists/{list_id}```: Retrieves a single list
-
-```POST /lists```: Create a list
-
-```DELETE /lists/{list_id}```: Deletes a specific list
-
-### Locations
-```POST /lists/{list_id}/locations```: Adds a location to a list
-
-```DELETE /lists/{list_id}/locations```: Deletes a location from a list
-
-```GET /lists/check-location/{place_id}```: Check which lists contain a given location
-
-### Search
-```GET /searchQuery```: Search for locations using the Geoapify API
-
----
-
 ## Local Development
 
 ### Environment Variables
@@ -65,7 +35,7 @@ API_KEY="here_api_key_here"
 ```
 On the frontend, create a `.env` with the following contents:
 ```
-SERVER_API_URL="server_api_url_here"
+VITE_SERVER_API_URL="vite_server_api_url_here"
 ```
 
 ### Backend
@@ -101,3 +71,38 @@ cd client
 npm install
 npm run dev
 ```
+
+---
+
+## Testing
+
+
+---
+
+## Server Endpoints
+
+### Auth
+```POST /register```: Register a new user account
+
+```POST /token```: Log in and obtain an access token
+
+```POST /verify-token```: Verify the validity of a user's JSON Web Token
+
+### Lists
+```GET /lists```: Retrieves all lists belonging to the authenticated user
+
+```GET /lists/{list_id}```: Retrieves a single list
+
+```POST /lists```: Create a list
+
+```DELETE /lists/{list_id}```: Deletes a specific list
+
+### Locations
+```POST /lists/{list_id}/locations```: Adds a location to a list
+
+```DELETE /lists/{list_id}/locations```: Deletes a location from a list
+
+```GET /lists/check-location/{place_id}```: Check which lists contain a given location
+
+### Search
+```GET /searchQuery```: Search for locations using the Geoapify API

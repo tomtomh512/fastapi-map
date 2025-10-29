@@ -41,7 +41,7 @@ const UserList: React.FC<UserListProps> = ({
 
             try {
                 const response: AxiosResponse<List> = await httpClient.get(
-                    `${import.meta.env.SERVER_API_URL}/lists/${listId}`,
+                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const UserList: React.FC<UserListProps> = ({
         }
 
         try {
-            await httpClient.delete(`${import.meta.env.SERVER_API_URL}/lists/${listId}`, {
+            await httpClient.delete(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
