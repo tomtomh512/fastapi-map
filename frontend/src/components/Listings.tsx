@@ -23,15 +23,15 @@ const Listings: React.FC<ListingsProps> = ({
         });
     }, [selectedLocation]);
 
-    const handleClick = async (listing: Location) => {
+    const handleClick = (listing: Location): void => {
         setSelectedLocation(listing);
-    }
+    };
 
     return (
         <section className="listings-container">
-            {listings.map((listing: Location, index: number) => (
+            {listings.map((listing: Location) => (
                 <section
-                    key={index}
+                    key={listing.place_id + "-listing"}
                     className={`listing-card ${selectedLocation && listing.place_id == selectedLocation.place_id ? "selected" : ""}`}
                     ref={(ref: HTMLDivElement | null) => {
                         if (ref) listingRefs.current[listing.place_id] = ref;

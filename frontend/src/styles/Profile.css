@@ -4,13 +4,14 @@
 
 .view-lists {
     display: flex;
+    flex-wrap: wrap;       /* allow buttons to wrap onto the next row */
     width: 100%;
     text-align: center;
 }
 
 .view-lists-button {
+    flex: 0 0 40%;
     margin: 5px;
-    flex: 1;
     background-color: white;
     border-radius: 10px;
     border: 2px solid rgba(0, 0, 0, 0.3);
@@ -19,8 +20,54 @@
     font-size: 1.25rem;
     padding: 5px 10px;
     transition: 0.25s;
+    /*box-sizing: border-box;*/
 }
 
 .view-lists-button:hover {
     border: 2px solid black;
+}
+
+.list-form {
+    font-size: 1.25rem;
+    display: flex;
+    background-color: white;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    text-align: left;
+    margin: 10px 5px 5px;
+    transition: 0.25s;
+}
+
+.list-form:hover {
+    border: 2px solid black;
+}
+
+.list-form > input {
+    all: unset;
+    padding: 10px;
+    /* Container width - (image width - padding - padding) * 2 */
+    width: calc(100% - (20px - 10px - 10px) * 2);
+}
+
+.list-form > button {
+    all: unset;
+    transition: 0.25s;
+    padding: 10px 20px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.list-form > button > img {
+    width: 20px;
+}
+
+.list-form > button:hover {
+    background-color: #0000004C;
+}
+
+.list-form-container > span {
+    font-size: 1.1rem;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }

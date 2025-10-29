@@ -87,9 +87,9 @@ const Map: React.FC<MapProps> = ({
                 <ChangeView center={[userLocation.lat, userLocation.long]} />
                 <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                {markers.map((marker: Location, index: number) => (
+                {markers.map((marker: Location) => (
                     <Marker
-                        key={index}
+                        key={marker.place_id + "-icon"}
                         position={[marker.latitude, marker.longitude]}
                         icon={(selectedLocation && marker.place_id === selectedLocation.place_id) ? customHighlightedIcon : customIcon}
                         zIndexOffset={(selectedLocation && marker.place_id === selectedLocation.place_id) ? 1000 : 0 }

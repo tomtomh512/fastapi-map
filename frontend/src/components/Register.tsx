@@ -1,7 +1,6 @@
 import React, { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
-import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
 import {getAxiosErrorMessage} from "../utils/axiosError.ts";
 
@@ -39,22 +38,6 @@ const Register: React.FC = () => {
                 password: form.password,
             });
 
-            // Log in immediately after registering
-            const loginData = new URLSearchParams();
-            loginData.append("username", form.username);
-            loginData.append("password", form.password);
-
-            const loginResponse = await httpClient.post<{ access_token: string }>(
-                `${import.meta.env.VITE_SERVER_API_URL}/login`,
-                loginData,
-                {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                }
-            );
-
-            setToken(loginResponse.data.access_token);
             navigate("/profile");
 
         } catch (error: unknown) {

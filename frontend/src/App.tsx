@@ -1,6 +1,6 @@
 import "./styles/app.css";
 import React, {useCallback, useEffect, useState} from "react";
-import type {Location, User, UserLocation} from "./types/types.ts";
+import type {List, Location, User, UserLocation} from "./types/types.ts";
 import {getToken, removeToken} from "./utils/tokenUtils.ts";
 import {type AxiosResponse} from "axios";
 import httpClient from "./httpClient.tsx";
@@ -12,6 +12,7 @@ import {Route, Routes} from "react-router-dom";
 import Profile from "./components/Profile.tsx";
 import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
+import UserList from "./components/UserList.tsx";
 
 const App: React.FC = () => {
     // Keep track of page inputs
@@ -29,7 +30,7 @@ const App: React.FC = () => {
     });
 
     // Ask for location
-    useEffect(() => {
+    useEffect((): void => {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position: GeolocationPosition) => {
@@ -73,7 +74,7 @@ const App: React.FC = () => {
             });
 
         } catch (error: unknown) {
-            const message = getAxiosErrorMessage(error);
+            const message: string = getAxiosErrorMessage(error);
             console.error(message);
             removeToken();
             setUser(null);
@@ -81,11 +82,45 @@ const App: React.FC = () => {
 
     }, []);
 
+    const [lists, setLists] = useState<List[] | null>(null);
+
+    const getLists = useCallback(async() => {
+        const token: string | null = getToken();
+
+        if (!token) {
+            setUser(null);
+            return;
+        }
+
+        try {
+            const response: AxiosResponse<List[]> = await httpClient.get(
+                `${import.meta.env.VITE_SERVER_API_URL}/lists`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setLists(response.data);
+
+        } catch (error: unknown) {
+            const message: string = getAxiosErrorMessage(error);
+            console.error(message);
+        }
+
+    }, [])
+
     useEffect(() => {
         (async () => {
             await verifyToken();
         })();
     }, [verifyToken]);
+
+    useEffect(() => {
+        (async () => {
+            await getLists();
+        })();
+    }, [getLists, user]);
 
     return (
         <main className="main-container">
@@ -124,11 +159,24 @@ const App: React.FC = () => {
                             user={user}
                             setUser={setUser}
                             setCurrentMarkers={setCurrentMarkers}
-                            verifyToken={verifyToken}
+                            lists={lists}
+                            setLists={setLists}
+                            getLists={getLists}
                         />
                     } />
+
                     <Route path="/login" element={<Login />} />
+
                     <Route path="/register" element={<Register />} />
+
+                    <Route path="/list/:listId" element={
+                        <UserList
+                            setUser={setUser}
+                            selectedLocation={selectedLocation}
+                            setSelectedLocation={setSelectedLocation}
+                            getLists={getLists}
+                        />
+                    } />
 
                 </Routes>
             }

@@ -15,5 +15,12 @@ export type Location = {
     longitude: number,
     place_id: string,
     category: string,
-    score: number,
+    score?: number,
+}
+
+export type List = {
+    id: string,
+    name: string,
+    locations: Location[],
+    is_default: boolean,
 }

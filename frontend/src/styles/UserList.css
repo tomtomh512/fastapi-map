@@ -1,0 +1,17 @@
+.userlist-container {
+
+}
+
+.remove-button {
+    color: red;
+    display: inline-block; /* <-- changed from flex */
+    font-size: 1.1rem;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.remove-button:active {
+    color: darkred;
+}

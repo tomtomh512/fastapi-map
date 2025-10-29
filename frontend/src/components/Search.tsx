@@ -45,6 +45,11 @@ const Search: React.FC<SearchProps> = ({
         event.preventDefault();
         setLoading(true);
 
+        if (searchInput == "") {
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
                 params: {
@@ -68,12 +73,13 @@ const Search: React.FC<SearchProps> = ({
 
     const clearSearchResults = (): void => {
         setCurrentMarkers([]);
+        setSearchInput("");
         setSearchResults([]);
         setSelectedLocation(undefined);
     }
 
     // Lets 'Enter' act as submit button
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === "Enter") {
             event.preventDefault();
             handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>);

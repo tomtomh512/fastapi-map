@@ -1,12 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Query, Body
+from fastapi import FastAPI, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from app.models import User
+from app.models import User, List
 from app.database import SessionLocal, engine
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import requests
@@ -52,6 +52,14 @@ def create_user(db: Session, user: UserCreate):
     db_user = User(username=user.username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
+
+    default_lists = [
+        List(name="Favorites", user_id=db_user.id, is_default=True),
+        List(name="Planned", user_id=db_user.id, is_default=True),
+    ]
+    db.add_all(default_lists)
+    db.commit()
+
     return "complete"
 
 @app.post("/register")
@@ -175,11 +183,136 @@ def search_query(query: str, lat: str, long: str, limit: int):
 
     return results
 
+class SearchParams(BaseModel):
+    query: str = Field(...)
+    lat: str = Field(...)
+    long: str = Field(...)
+
 @app.get("/searchQuery")
-def search(
-        query: str = Query(...),
-        lat: str = Query(...),
-        long: str = Query(...),
-):
-    search_result = search_query(query, lat, long, 50)
+def search(params: SearchParams = Depends()):
+    search_result = search_query(params.query, params.lat, params.long, 50)
     return {"results": search_result}
+
+class ListCreate(BaseModel):
+    name: str
+
+@app.post("/lists")
+def create_list(
+        list_data: ListCreate,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    new_list = List(name=list_data.name, user_id=user.id)
+    db.add(new_list)
+    db.commit()
+    db.refresh(new_list)
+
+    return {
+        "id": new_list.id,
+        "name": new_list.name,
+        "user_id": user.id,
+        "message": "List created successfully",
+    }
+
+@app.get("/lists")
+def get_lists(
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    lists = db.query(List).filter(List.user_id == user.id).all()
+
+    result = []
+    for lst in lists:
+        result.append({
+            "id": lst.id,
+            "name": lst.name,
+            "is_default": lst.is_default,
+        })
+    return result
+
+@app.get("/lists/{list_id}")
+def get_list(
+        list_id: int,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db),
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    list_to_get = (
+        db.query(List)
+        .filter(List.id == list_id, List.user_id == user.id)
+        .first()
+    )
+
+    if not list_to_get:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    locations = [
+        {
+            "id": ll.location.id,
+            "name": ll.location.name,
+            "address": ll.location.address,
+            "latitude": ll.location.latitude,
+            "longitude": ll.location.longitude,
+            "place_id": ll.location.place_id,
+            "category": ll.location.category
+        }
+        for ll in list_to_get.locations
+    ]
+
+    return {
+        "id": list_to_get.id,
+        "name": list_to_get.name,
+        "locations": locations,
+        "is_default": list_to_get.is_default,
+    }
+
+
+@app.delete("/lists/{list_id}")
+def delete_list(
+        list_id: int,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db),
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    list_to_delete = (
+        db.query(List)
+        .filter(List.id == list_id, List.user_id == user.id)
+        .first()
+    )
+
+    if not list_to_delete:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    if list_to_delete.is_default:
+        raise HTTPException(status_code=403, detail="Default lists cannot be deleted")
+
+    db.delete(list_to_delete)
+    db.commit()
+
+    return {"message": f"List '{list_to_delete.name}' deleted successfully"}
