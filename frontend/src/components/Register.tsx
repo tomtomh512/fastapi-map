@@ -33,7 +33,7 @@ const Register: React.FC = () => {
         }
 
         try {
-            await httpClient.post(`${import.meta.env.VITE_SERVER_API_URL}/register`, {
+            await httpClient.post(`${import.meta.env.SERVER_API_URL}/register`, {
                 username: form.username,
                 password: form.password,
             });

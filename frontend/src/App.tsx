@@ -65,7 +65,7 @@ const App: React.FC = () => {
 
         try {
             const response: AxiosResponse<User> = await httpClient.post(
-                `${import.meta.env.VITE_SERVER_API_URL}/verify-token`,
+                `${import.meta.env.SERVER_API_URL}/verify-token`,
                 { token }
             );
             setUser({
@@ -99,7 +99,7 @@ const App: React.FC = () => {
 
         try {
             const response: AxiosResponse<List[]> = await httpClient.get(
-                `${import.meta.env.VITE_SERVER_API_URL}/lists`,
+                `${import.meta.env.SERVER_API_URL}/lists`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -193,6 +193,7 @@ const App: React.FC = () => {
                             selectedLocation={selectedLocation}
                             setSelectedLocation={setSelectedLocation}
                             getLists={getLists}
+                            setCurrentMarkers={setCurrentMarkers}
                         />
                     } />
 

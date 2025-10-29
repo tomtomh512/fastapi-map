@@ -13,13 +13,15 @@ interface UserListProps {
     selectedLocation?: Location;
     setSelectedLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
     getLists: () => Promise<void>;
+    setCurrentMarkers: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
 const UserList: React.FC<UserListProps> = ({
                                                setUser,
                                                selectedLocation,
                                                setSelectedLocation,
-                                               getLists
+                                               getLists,
+                                               setCurrentMarkers
                                            }) => {
 
     const { listId } = useParams<{ listId: string }>();
@@ -39,7 +41,7 @@ const UserList: React.FC<UserListProps> = ({
 
             try {
                 const response: AxiosResponse<List> = await httpClient.get(
-                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`,
+                    `${import.meta.env.SERVER_API_URL}/lists/${listId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -48,6 +50,7 @@ const UserList: React.FC<UserListProps> = ({
                 );
 
                 setList(response.data)
+                setCurrentMarkers(response.data.locations);
 
             } catch (error: unknown) {
                 const message: string = getAxiosErrorMessage(error);
@@ -77,7 +80,7 @@ const UserList: React.FC<UserListProps> = ({
         }
 
         try {
-            await httpClient.delete(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`, {
+            await httpClient.delete(`${import.meta.env.SERVER_API_URL}/lists/${listId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

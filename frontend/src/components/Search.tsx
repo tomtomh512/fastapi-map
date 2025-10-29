@@ -52,7 +52,7 @@ const Search: React.FC<SearchProps> = ({
         }
 
         try {
-            const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
+            const response = await httpClient.get(`${import.meta.env.SERVER_API_URL}/searchQuery`, {
                 params: {
                     query: searchInput,
                     lat: userLocation.lat,
