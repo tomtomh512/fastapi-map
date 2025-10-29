@@ -82,7 +82,9 @@ const App: React.FC = () => {
 
     }, []);
 
-    const [lists, setLists] = useState<List[] | null>(null);
+    const [lists, setLists] = useState<List[]>([]);
+    const [favoriteID, setFavoriteID] = React.useState<string>("");
+    const [plannedID, setPlannedID] = React.useState<string>("");
 
     const getLists = useCallback(async() => {
         const token: string | null = getToken();
@@ -101,7 +103,18 @@ const App: React.FC = () => {
                     },
                 }
             );
+
             setLists(response.data);
+
+            response.data.forEach((list: List) => {
+                if (list.is_default) {
+                    if (list.name == "Favorites") {
+                        setFavoriteID(list.id);
+                    } else if (list.name == "Planned") {
+                        setPlannedID(list.id);
+                    }
+                }
+            })
 
         } catch (error: unknown) {
             const message: string = getAxiosErrorMessage(error);
@@ -128,6 +141,8 @@ const App: React.FC = () => {
                 showPanel={showPanel}
                 togglePanel={togglePanel}
                 togglePanelTrue={togglePanelTrue}
+                favoriteID={favoriteID}
+                plannedID={plannedID}
             />
 
             <Map

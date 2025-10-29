@@ -58,7 +58,7 @@ const UserList: React.FC<UserListProps> = ({
         if (listId){
             fetchList();
         }
-    }, [listId])
+    }, [listId, navigate, setUser])
 
     const handleDeleteList = async () => {
         if (!listId) return;
@@ -94,11 +94,15 @@ const UserList: React.FC<UserListProps> = ({
             {list && (
                 <>
                     <h1>{list.name}</h1>
-                    <div>
-                        <span className="remove-button" onClick={handleDeleteList}>
-                            Delete list
-                        </span>
-                    </div>
+
+                    {list && !list.is_default && (
+                        <div>
+                            <span className="remove-button" onClick={handleDeleteList}>
+                                Delete list
+                            </span>
+                        </div>
+                    )}
+
 
                     {list.locations.length === 0 ? (
                         <h3 className="results-message">Nothing to display</h3>

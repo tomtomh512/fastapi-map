@@ -12,7 +12,7 @@ interface ProfileProps {
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     setCurrentMarkers: React.Dispatch<React.SetStateAction<Location[]>>;
     lists: List[] | null,
-    setLists: React.Dispatch<React.SetStateAction<List[] | null>>
+    setLists: React.Dispatch<React.SetStateAction<List[]>>
     getLists: () => Promise<void>;
 }
 
@@ -35,7 +35,7 @@ const Profile: React.FC<ProfileProps> = ({
     const logoutUser = (): void => {
         removeToken();
         setUser(null);
-        setLists(null);
+        setLists([]);
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
