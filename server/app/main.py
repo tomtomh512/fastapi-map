@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from app.models import User, List
+from app.models import User, List, ListLocation, Location
 from app.database import SessionLocal, engine
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
@@ -286,7 +286,6 @@ def get_list(
         "is_default": list_to_get.is_default,
     }
 
-
 @app.delete("/lists/{list_id}")
 def delete_list(
         list_id: int,
@@ -316,3 +315,125 @@ def delete_list(
     db.commit()
 
     return {"message": f"List '{list_to_delete.name}' deleted successfully"}
+
+class LocationCreate(BaseModel):
+    name: str
+    address: str
+    latitude: float
+    longitude: float
+    place_id: str
+    category: str | None = None
+
+@app.post("/lists/{list_id}/locations")
+def add_location_to_list(
+        list_id: int,
+        location_data: LocationCreate,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
+    if not lst:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    loc = db.query(Location).filter(Location.place_id == location_data.place_id).first()
+    if not loc:
+        loc = Location(
+            name=location_data.name,
+            address=location_data.address,
+            latitude=location_data.latitude,
+            longitude=location_data.longitude,
+            place_id=location_data.place_id,
+            category=location_data.category or "Unknown"
+        )
+        db.add(loc)
+        db.commit()
+        db.refresh(loc)
+
+    exists = db.query(ListLocation).filter(
+        ListLocation.list_id == lst.id,
+        ListLocation.location_id == loc.id
+    ).first()
+    if exists:
+        raise HTTPException(status_code=400, detail="Location already in list")
+
+    list_location = ListLocation(list_id=lst.id, location_id=loc.id)
+    db.add(list_location)
+    db.commit()
+    db.refresh(list_location)
+
+    return {"message": f"Location added to list '{lst.name}'"}
+
+@app.delete("/lists/{list_id}/locations/{place_id}")
+def remove_location_from_list(
+        list_id: int,
+        place_id: str,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db)
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
+    if not lst:
+        raise HTTPException(status_code=404, detail="List not found")
+
+    loc = db.query(Location).filter(Location.place_id == place_id).first()
+    if not loc:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    list_location = db.query(ListLocation).filter(
+        ListLocation.list_id == lst.id,
+        ListLocation.location_id == loc.id
+    ).first()
+
+    if not list_location:
+        raise HTTPException(status_code=404, detail="Location not in list")
+
+    db.delete(list_location)
+    db.commit()
+
+    return {"message": "Location removed"}
+
+@app.get("/check-location/{place_id}")
+def check_location(
+        place_id: str,
+        token: str = Depends(oauth2_scheme),
+        db: Session = Depends(get_db),
+):
+    payload = verify_token(token)
+    username = payload.get("sub")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_lists = db.query(List).filter(List.user_id == user.id).all()
+    location = db.query(Location).filter(Location.place_id == place_id).first()
+
+    results = []
+    for lst in user_lists:
+        if location:
+            added = db.query(ListLocation).filter(
+                ListLocation.list_id == lst.id,
+                ListLocation.location_id == location.id
+            ).first() is not None
+        else:
+            added = False
+
+        results.append({
+            "id": lst.id,
+            "name": lst.name,
+            "added": added
+        })
+
+    return results

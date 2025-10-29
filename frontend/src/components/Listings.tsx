@@ -1,18 +1,26 @@
 import "../styles/Listings.css";
 import type {Location} from "../types/types.ts";
 import React, {useEffect, useRef} from "react";
+import ListDropdown from "./ListDropdown.tsx";
+import {getToken} from "../utils/tokenUtils.ts";
 
 interface ListingsProps {
     listings: Location[];
     selectedLocation?: Location;
     setSelectedLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
+    handleDeleteLocation?: (location: Location) => void;
+    currentListId?: string;
 }
 
 const Listings: React.FC<ListingsProps> = ({
                                                listings,
                                                selectedLocation,
                                                setSelectedLocation,
+                                               handleDeleteLocation,
+                                               currentListId,
                                            }) => {
+
+    const currListId: string = currentListId ?? "Search";
 
     const listingRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -55,7 +63,17 @@ const Listings: React.FC<ListingsProps> = ({
                         )}
                         <p className="listing-address">{listing.address}</p>
 
-                        <hr />
+                        {getToken() && (
+                            <>
+                                <hr />
+
+                                <ListDropdown
+                                    location={listing}
+                                    handleDeleteLocation={handleDeleteLocation}
+                                    currentListId={currListId}
+                                />
+                            </>
+                        )}
 
                     </div>
                     <section className="button-container">

@@ -14,7 +14,7 @@ export type Location = {
     latitude: number,
     longitude: number,
     place_id: string,
-    category: string,
+    category?: string,
     score?: number,
 }
 
@@ -23,4 +23,10 @@ export type List = {
     name: string,
     locations: Location[],
     is_default: boolean,
+}
+
+export interface ListStatus {
+    id: string;
+    name: string;
+    added: boolean;
 }

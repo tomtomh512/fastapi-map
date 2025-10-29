@@ -19,7 +19,7 @@ const UserList: React.FC<UserListProps> = ({
                                                setUser,
                                                selectedLocation,
                                                setSelectedLocation,
-                                               getLists,
+                                               getLists
                                            }) => {
 
     const { listId } = useParams<{ listId: string }>();
@@ -82,13 +82,27 @@ const UserList: React.FC<UserListProps> = ({
             });
 
             await getLists();
-            navigate("/");
+            navigate("/profile");
 
         } catch (error: unknown) {
             const message = getAxiosErrorMessage(error);
             console.error("Failed to delete list:", message);
         }
     }
+
+    // Handles how to render when a location is deleted
+    const handleDeleteLocation = (removedLocation: Location) => {
+        if (!list) {
+            return;
+        }
+
+        setList({
+            ...list,
+            locations: list.locations.filter(
+                (loc) => loc.place_id !== removedLocation.place_id
+            ),
+        });
+    };
 
     return (
         <div className="userlist-container main-content-element">
@@ -112,6 +126,8 @@ const UserList: React.FC<UserListProps> = ({
                             listings={list.locations}
                             selectedLocation={selectedLocation}
                             setSelectedLocation={setSelectedLocation}
+                            handleDeleteLocation={handleDeleteLocation}
+                            currentListId={listId}
                         />
                     )}
                 </>

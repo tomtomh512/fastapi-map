@@ -64,14 +64,18 @@ const Map: React.FC<MapProps> = ({
 
             const handleMoveEnd = () => {
                 const newCenter = map.getCenter();
-                onViewChange({ lat: newCenter.lat, long: newCenter.lng });
+                const { lat, lng } = newCenter;
+                // only update if center actually changed
+                if (lat !== center[0] || lng !== center[1]) {
+                    onViewChange({ lat, long: lng });
+                }
             };
 
             map.on("moveend", handleMoveEnd);
             return () => {
                 map.off("moveend", handleMoveEnd);
             };
-        }, [center, map]);
+        }, [center, map, onViewChange]);
 
         return null;
     };

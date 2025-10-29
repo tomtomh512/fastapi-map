@@ -1,10 +1,11 @@
 import "../styles/Search.css";
 import React, {useEffect, useState} from "react";
-import type { Location, UserLocation } from "../types/types";
+import type {Location, UserLocation} from "../types/types";
 import httpClient from "../httpClient.tsx";
 import SearchIcon from "../assets/searchIcon.png";
 import ExitIcon from "../assets/exitIcon.png";
 import Listings from "./Listings.tsx";
+import {getAxiosErrorMessage} from "../utils/axiosError.ts";
 
 interface SearchProps {
     setCurrentMarkers: React.Dispatch<React.SetStateAction<Location[]>>;
@@ -25,7 +26,7 @@ const Search: React.FC<SearchProps> = ({
                                            searchInput,
                                            setSearchInput,
                                            searchResults,
-                                           setSearchResults,
+                                           setSearchResults
                                        }) => {
 
     const [message, setMessage] = useState<string>("");
@@ -63,8 +64,9 @@ const Search: React.FC<SearchProps> = ({
             setSearchResults(response.data.results);
             setSelectedLocation(undefined);
 
-        } catch (error) {
-            console.error("Error fetching search results:", error);
+        } catch (error: unknown) {
+            const message: string = getAxiosErrorMessage(error);
+            console.error("Error fetching search results:", message);
 
         } finally {
             setLoading(false);

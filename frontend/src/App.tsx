@@ -25,8 +25,8 @@ const App: React.FC = () => {
     const [selectedLocation, setSelectedLocation] = useState<Location>();
     // Current coordinates of map view
     const [userLocation, setUserLocation] = useState<UserLocation>({
-        lat: 40.730610,
-        long: -73.935242,
+        lat: 40.7685,
+        long: -73.9822,
     });
 
     // Ask for location
@@ -42,7 +42,7 @@ const App: React.FC = () => {
                 }
             );
         } else {
-            console.log("Geolocation not supported");
+            console.error("Geolocation not supported");
         }
     }, []);
 
