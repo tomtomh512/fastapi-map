@@ -29,7 +29,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
         try {
 
             const response: AxiosResponse<ListStatus[]> = await httpClient.get<ListStatus[]>(
-                `${import.meta.env.VITE_SERVER_API_URL}/check-location/${location.place_id}`,
+                `${import.meta.env.VITE_SERVER_API_URL}/lists/check-location/${location.place_id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
