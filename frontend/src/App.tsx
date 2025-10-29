@@ -82,10 +82,13 @@ const App: React.FC = () => {
 
     }, []);
 
+    // User's lists
     const [lists, setLists] = useState<List[]>([]);
+    // Get the IDs of favorite and planned lists for navbar
     const [favoriteID, setFavoriteID] = React.useState<string>("");
     const [plannedID, setPlannedID] = React.useState<string>("");
 
+    // Fetches lists
     const getLists = useCallback(async() => {
         const token: string | null = getToken();
 

@@ -38,6 +38,7 @@ const Profile: React.FC<ProfileProps> = ({
         setLists([]);
     }
 
+    // Adds a list to user's lists
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
 

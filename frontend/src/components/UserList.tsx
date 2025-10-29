@@ -26,6 +26,7 @@ const UserList: React.FC<UserListProps> = ({
     const [list, setList] = useState<List | null>(null);
     const navigate = useNavigate();
 
+    // Fetches specific list by ID
     useEffect(() => {
         const fetchList = async () => {
             const token: string | null = getToken();
