@@ -13,6 +13,7 @@ def search_query(query: str, lat: str, long: str, limit: int):
     }
 
     response = requests.get(base_url, params=params)
+
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Failed to fetch data")
 
@@ -39,4 +40,5 @@ def search_query(query: str, lat: str, long: str, limit: int):
         })
 
     results.sort(key=lambda x: x["score"], reverse=True)
+
     return results

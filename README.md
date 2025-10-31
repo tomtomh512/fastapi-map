@@ -98,9 +98,9 @@ npm run dev
 ```DELETE /lists/{list_id}```: Deletes a specific list
 
 ### Locations
-```POST /lists/{list_id}/locations```: Adds a location to a list
+```POST /lists/{list_id}/locations/{place_id}```: Adds a location to a list
 
-```DELETE /lists/{list_id}/locations```: Deletes a location from a list
+```DELETE /lists/{list_id}/locations/{place_id}```: Deletes a location from a list
 
 ```GET /lists/check-location/{place_id}```: Check which lists contain a given location
 
