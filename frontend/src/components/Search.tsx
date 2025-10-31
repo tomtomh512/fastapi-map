@@ -6,6 +6,7 @@ import SearchIcon from "../assets/searchIcon.png";
 import ExitIcon from "../assets/exitIcon.png";
 import Listings from "./Listings.tsx";
 import {getAxiosErrorMessage} from "../utils/axiosError.ts";
+import type {AxiosResponse} from "axios";
 
 interface SearchProps {
     setCurrentMarkers: React.Dispatch<React.SetStateAction<Location[]>>;
@@ -16,6 +17,10 @@ interface SearchProps {
     setSearchInput: React.Dispatch<React.SetStateAction<string>>;
     searchResults: Location[];
     setSearchResults: React.Dispatch<React.SetStateAction<Location[]>>;
+}
+
+interface SearchResponse {
+    results: Location[];
 }
 
 const Search: React.FC<SearchProps> = ({
@@ -52,7 +57,7 @@ const Search: React.FC<SearchProps> = ({
         }
 
         try {
-            const response = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
+            const response: AxiosResponse<SearchResponse> = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/searchQuery`, {
                 params: {
                     query: searchInput,
                     lat: userLocation.lat,

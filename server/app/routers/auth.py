@@ -40,6 +40,7 @@ def login_for_access_token(
     db: Session = Depends(get_db)
 ):
     user = db.query(User).filter(User.username == form_data.username).first()
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
@@ -47,6 +48,7 @@ def login_for_access_token(
         data={"sub": user.username},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+
     return {
         "id": user.id,
         "username": user.username,
@@ -55,9 +57,18 @@ def login_for_access_token(
     }
 
 @router.post("/verify-token")
-def verify_user_token(token: str = Body(..., embed=True), db: Session = Depends(get_db)):
+def verify_user_token(
+        token: str = Body(..., embed=True),
+        db: Session = Depends(get_db)
+):
     username = verify_token(token)
     user = get_user_by_username(db, username)
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return {"id": user.id, "username": user.username, "message": "Token is valid"}
+
+    return {
+        "id": user.id,
+        "username": user.username,
+        "message": "Token is valid"
+    }

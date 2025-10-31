@@ -7,9 +7,16 @@ from app.core.security import get_db, verify_token
 router = APIRouter(prefix="/lists", tags=["Locations"])
 
 @router.post("/{list_id}/locations")
-def add_location(list_id: int, location_data: LocationCreate, token: str = Depends(verify_token), db: Session = Depends(get_db)):
+def add_location(
+        list_id: int,
+        location_data: LocationCreate,
+        token: str = Depends(verify_token),
+        db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.username == token).first()
+
     lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
+
     if not lst:
         raise HTTPException(status_code=404, detail="List not found")
 
@@ -25,12 +32,20 @@ def add_location(list_id: int, location_data: LocationCreate, token: str = Depen
 
     db.add(ListLocation(list_id=lst.id, location_id=loc.id))
     db.commit()
+
     return {"message": f"Location added to list '{lst.name}'"}
 
 @router.delete("/{list_id}/locations/{place_id}")
-def remove_location(list_id: int, place_id: str, token: str = Depends(verify_token), db: Session = Depends(get_db)):
+def remove_location(
+        list_id: int,
+        place_id: str,
+        token: str = Depends(verify_token),
+        db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.username == token).first()
+
     lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
+
     if not lst:
         raise HTTPException(status_code=404, detail="List not found")
 
@@ -44,12 +59,19 @@ def remove_location(list_id: int, place_id: str, token: str = Depends(verify_tok
 
     db.delete(link)
     db.commit()
+
     return {"message": "Location removed"}
 
 @router.get("/check-location/{place_id}")
-def check_location(place_id: str, token: str = Depends(verify_token), db: Session = Depends(get_db)):
+def check_location(
+        place_id: str,
+        token: str = Depends(verify_token),
+        db: Session = Depends(get_db)
+):
     user = db.query(User).filter(User.username == token).first()
+
     user_lists = db.query(List).filter(List.user_id == user.id).all()
+
     location = db.query(Location).filter(Location.place_id == place_id).first()
 
     results = []
@@ -59,5 +81,7 @@ def check_location(place_id: str, token: str = Depends(verify_token), db: Sessio
             added = db.query(ListLocation).filter(
                 ListLocation.list_id == lst.id, ListLocation.location_id == location.id
             ).first() is not None
+
         results.append({"id": lst.id, "name": lst.name, "added": added})
+
     return results

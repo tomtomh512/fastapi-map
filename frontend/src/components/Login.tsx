@@ -4,13 +4,25 @@ import httpClient from "../httpClient";
 import { setToken } from "../utils/tokenUtils";
 import "../styles/Authentication.css";
 import {getAxiosErrorMessage} from "../utils/axiosError.ts";
+import type {User} from "../types/types.ts";
+import type {AxiosResponse} from "axios";
 
 interface LoginForm {
     username: string;
     password: string;
 }
 
-const Login: React.FC = () => {
+interface LoginProps {
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
+}
+
+interface LoginResponse {
+    id: string;
+    username: string;
+    access_token: string;
+}
+
+const Login: React.FC<LoginProps> = ({setUser}) => {
     const [form, setForm] = useState<LoginForm>({ username: "", password: "" });
     const [alertMessage, setAlertMessage] = useState<string>("");
     const navigate = useNavigate();
@@ -27,13 +39,19 @@ const Login: React.FC = () => {
             formDetails.append("username", form.username);
             formDetails.append("password", form.password);
 
-            const response = await httpClient.post<{ access_token: string }>(
+            const response: AxiosResponse<LoginResponse> = await httpClient.post(
                 `${import.meta.env.VITE_SERVER_API_URL}/token`,
                 formDetails,
                 { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
             );
 
             setToken(response.data.access_token);
+
+            setUser({
+                id: response.data.id,
+                username: response.data.username,
+            });
+
             navigate("/profile");
 
         } catch (error: unknown) {

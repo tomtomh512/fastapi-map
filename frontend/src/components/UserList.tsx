@@ -28,6 +28,10 @@ const UserList: React.FC<UserListProps> = ({
     const [list, setList] = useState<List | null>(null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setSelectedLocation(undefined)
+    }, [setSelectedLocation]);
+
     // Fetches specific list by ID
     useEffect(() => {
         const fetchList = async () => {
