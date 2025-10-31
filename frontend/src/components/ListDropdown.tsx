@@ -29,7 +29,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
         try {
 
             const response: AxiosResponse<ListStatus[]> = await httpClient.get<ListStatus[]>(
-                `${import.meta.env.VITE_SERVER_API_URL}/lists/check-location/${location.place_id}`,
+                `${import.meta.env.VITE_SERVER_API_URL}/locations/check-location/${location.place_id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -49,7 +49,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
             if (added) {
                 // remove location from list
                 await httpClient.delete(
-                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}/locations/${location.place_id}`,
+                    `${import.meta.env.VITE_SERVER_API_URL}/locations/${listId}/${location.place_id}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -58,7 +58,7 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
             } else {
                 // add location to list
                 await httpClient.post(
-                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}/locations`,
+                    `${import.meta.env.VITE_SERVER_API_URL}/locations/${listId}`,
                     location,
                     {
                         headers: { Authorization: `Bearer ${token}` },
@@ -73,8 +73,13 @@ const ListDropdown: React.FC<ListDropdownProps> = ({
                 )
             );
 
+            // Turn both into ints to be safe
+            const a = parseInt(String(listId), 10);
+            const b = parseInt(String(currentListId), 10);
+
             // if list deleting from is the same as current list, don't render changes
-            if (added && handleDeleteLocation && listId === currentListId) {
+            if (added && handleDeleteLocation && (a === b)) {
+                console.log("test");
                 handleDeleteLocation(location);
             }
 

@@ -4,9 +4,9 @@ from app.models import List, Location, ListLocation, User
 from app.schemas.location import LocationCreate
 from app.core.security import get_db, verify_token
 
-router = APIRouter(prefix="/lists", tags=["Locations"])
+router = APIRouter(prefix="/locations", tags=["Locations"])
 
-@router.post("/{list_id}/locations")
+@router.post("/{list_id}")
 def add_location(
         list_id: int,
         location_data: LocationCreate,
@@ -35,7 +35,7 @@ def add_location(
 
     return {"message": f"Location added to list '{lst.name}'"}
 
-@router.delete("/{list_id}/locations/{place_id}")
+@router.delete("/{list_id}/{place_id}")
 def remove_location(
         list_id: int,
         place_id: str,
