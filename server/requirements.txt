@@ -7,5 +7,6 @@ SQLAlchemy
 uvicorn
 passlib
 python-dotenv
+requests
 pytest
 httpx

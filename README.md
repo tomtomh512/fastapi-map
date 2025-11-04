@@ -76,6 +76,26 @@ npm run dev
 
 ## Testing
 
+### Backend
+1. Ensure current directory is the server directory
+```
+cd server
+```
+2. Run tests with pytest
+```
+cd tests
+pytest -v
+```
+
+### Frontend
+1. Ensure current directory is the frontend directory
+```
+cd frontend
+```
+2. Run tests
+```
+npm run test
+```
 
 ---
 

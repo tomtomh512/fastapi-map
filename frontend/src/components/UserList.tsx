@@ -66,7 +66,7 @@ const UserList: React.FC<UserListProps> = ({
         if (listId){
             fetchList();
         }
-    }, [listId, navigate, setUser])
+    }, [listId, navigate, setUser, setCurrentMarkers])
 
     const handleDeleteList = async () => {
         if (!listId) return;

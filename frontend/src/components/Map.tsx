@@ -75,7 +75,7 @@ const Map: React.FC<MapProps> = ({
             return () => {
                 map.off("moveend", handleMoveEnd);
             };
-        }, [center, map, onViewChange]);
+        }, [center, map]);
 
         return null;
     };
