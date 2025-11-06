@@ -81,4 +81,4 @@ def delete_list(
     db.delete(lst)
     db.commit()
 
-    return {"message": f"List {lst.name} deleted successfully"}
+    return {"message": f"List '{lst.name}' deleted successfully"}

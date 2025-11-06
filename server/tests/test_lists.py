@@ -2,13 +2,11 @@ from app.models import User, List
 
 def test_create_and_get_lists(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     client.post(
@@ -45,22 +43,23 @@ def test_create_and_get_lists(client, db):
     data = response.json()
 
     assert response.status_code == 200
-    assert len(data) == 4
 
-    for l in data:
-        assert "id" in l
-        assert "name" in l
-        assert "is_default" in l
+    expected = [
+        {'id': 1, 'is_default': True, 'name': 'Favorites'},
+        {'id': 2, 'is_default': True, 'name': 'Planned'},
+        {'id': 3, 'is_default': False, 'name': 'testlist1'},
+        {'id': 4, 'is_default': False, 'name': 'testlist2'}
+    ]
+
+    assert data == expected
 
 def test_get_specific_list(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     listsResponse = client.get(
@@ -87,20 +86,18 @@ def test_get_specific_list(client, db):
     assert response.status_code == 200
 
     data = response.json()
-    assert "id" in data
-    assert "name" in data
-    assert "locations" in data
-    assert "is_default" in data
+
+    expected = {'id': 1, 'is_default': True, 'locations': [], 'name': 'Favorites'}
+
+    assert data == expected
 
 def test_get_nonexistent_list(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     response = client.get(
@@ -115,13 +112,11 @@ def test_get_nonexistent_list(client, db):
 
 def test_delete_list(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     client.post(
@@ -157,17 +152,15 @@ def test_delete_list(client, db):
     assert response.status_code == 200
 
     data = response.json()
-    assert data["message"] == "List testlist1 deleted successfully"
+    assert data["message"] == "List 'testlist1' deleted successfully"
 
 def test_delete_default_list(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     listsResponse = client.get(
@@ -196,13 +189,11 @@ def test_delete_default_list(client, db):
 
 def test_delete_nonexistent_list(client, db):
     client.post("/register", json={"username": "testuser", "password": "testpass"})
-
     loginResponse = client.post(
         "/token",
         data={"username": "testuser", "password": "testpass"},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
-
     access_token = loginResponse.json()["access_token"]
 
     response = client.delete(

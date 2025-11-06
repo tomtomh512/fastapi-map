@@ -22,7 +22,7 @@ def add_location(
 
     loc = db.query(Location).filter(Location.place_id == location_data.place_id).first()
     if not loc:
-        loc = Location(**location_data.dict())
+        loc = Location(**location_data.model_dump())
         db.add(loc)
         db.commit()
         db.refresh(loc)
