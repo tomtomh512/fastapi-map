@@ -59,12 +59,13 @@ const Profile: React.FC<ProfileProps> = ({
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`,
                     },
                 }
             );
 
             await getLists();
+            setAddListInput("");
 
         } catch (error: unknown) {
             const message = getAxiosErrorMessage(error);

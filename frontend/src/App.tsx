@@ -102,7 +102,7 @@ const App: React.FC = () => {
                 `${import.meta.env.VITE_SERVER_API_URL}/lists`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`,
                     },
                 }
             );

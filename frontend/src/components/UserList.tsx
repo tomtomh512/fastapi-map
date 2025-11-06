@@ -48,7 +48,7 @@ const UserList: React.FC<UserListProps> = ({
                     `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`,
                     {
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            "Authorization": `Bearer ${token}`,
                         },
                     }
                 );
@@ -85,7 +85,7 @@ const UserList: React.FC<UserListProps> = ({
 
         try {
             await httpClient.delete(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { "Authorization": `Bearer ${token}` },
             });
 
             await getLists();

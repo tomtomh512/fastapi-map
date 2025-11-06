@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import app
-from app.database import Base, SessionLocal
+from app.database import Base
 from app.core.security import get_db
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -20,6 +20,14 @@ def override_get_db():
         db.close()
 
 app.dependency_overrides[get_db] = override_get_db
+
+@pytest.fixture
+def db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @pytest.fixture
 def client():

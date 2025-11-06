@@ -1,3 +1,5 @@
+from app.models import User, List
+
 def test_register(client):
     response = client.post("/register", json={"username": "testuser", "password": "testpass"})
 
@@ -63,3 +65,14 @@ def test_verify_token_invalid(client):
     response = client.post("/verify-token", json={"token": "11122333"})
     assert response.status_code == 403
     assert response.json()["detail"] == "Token invalid or expired"
+
+def test_register_creates_default_lists(client, db):
+    response = client.post("/register", json={"username": "testuser", "password": "testpass"})
+
+    user = db.query(User).filter(User.username == "testuser").first()
+    lists = db.query(List).filter(List.user_id == user.id).all()
+
+    assert response.status_code == 200
+    assert len(lists) == 2
+    assert {l.name for l in lists} == {"Favorites", "Planned"}
+    assert all(l.is_default for l in lists)
