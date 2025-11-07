@@ -29,7 +29,7 @@ class Location(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    address = Column(String)
+    address = Column(String, nullable=False)
     latitude = Column(Float, nullable=False, default=0.0)
     longitude = Column(Float, nullable=False, default=0.0)
     place_id = Column(String, unique=True, index=True)

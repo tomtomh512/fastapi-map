@@ -10,7 +10,7 @@ A FastAPI server managing JWT authentication, REST API calls, and CRUD operation
 
 - Interactive map – Look up locations an interactive map
 - Authentication - Create an account with a username and password
-- Custom Lists – Create and manage lists to save and organize locations to
+- Custom lists – Create and manage lists to save and organize locations to
 
 ---
 
