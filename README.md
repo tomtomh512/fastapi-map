@@ -96,33 +96,3 @@ cd frontend
 ```
 npm run test
 ```
-
----
-
-## Server Endpoints
-
-### Auth
-```POST /register```: Register a new user account
-
-```POST /token```: Log in and obtain an access token
-
-```POST /verify-token```: Verify the validity of a user's JSON Web Token
-
-### Lists
-```GET /lists```: Retrieves all lists belonging to the authenticated user
-
-```GET /lists/{list_id}```: Retrieves a single list
-
-```POST /lists```: Create a list
-
-```DELETE /lists/{list_id}```: Deletes a specific list
-
-### Locations
-```POST /locations/{list_id}/```: Adds a location to a list
-
-```DELETE /locations/{list_id}/{place_id}```: Deletes a location from a list
-
-```GET /locations/check-location/{place_id}```: Check which lists contain a given location
-
-### Search
-```GET /searchQuery```: Search for locations using the Geoapify API
