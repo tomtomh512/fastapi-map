@@ -64,7 +64,7 @@ uvicorn app.main:app --reload
 
 1. Navigate to the frontend directory
 ```
-cd client
+cd frontend
 ```
 2. Install dependencies & run app
 ```

@@ -2,7 +2,6 @@ import "../styles/Listings.css";
 import type {Location} from "../types/types.ts";
 import React, {useEffect, useRef} from "react";
 import ListDropdown from "./ListDropdown.tsx";
-import {getToken} from "../utils/tokenUtils.ts";
 
 interface ListingsProps {
     listings: Location[];
@@ -10,6 +9,7 @@ interface ListingsProps {
     setSelectedLocation: React.Dispatch<React.SetStateAction<Location | undefined>>;
     handleDeleteLocation?: (location: Location) => void;
     currentListId?: string;
+    userLoggedIn?: boolean;
 }
 
 const Listings: React.FC<ListingsProps> = ({
@@ -18,8 +18,8 @@ const Listings: React.FC<ListingsProps> = ({
                                                setSelectedLocation,
                                                handleDeleteLocation,
                                                currentListId,
+                                               userLoggedIn = true,
                                            }) => {
-
     const currListId: string = currentListId ?? "Search";
 
     const listingRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -37,36 +37,32 @@ const Listings: React.FC<ListingsProps> = ({
 
     return (
         <section className="listings-container">
-            {listings.map((listing: Location) => (
+            {listings.map(listing => (
                 <section
                     key={listing.place_id + "-listing"}
-                    className={`listing-card ${selectedLocation && listing.place_id == selectedLocation.place_id ? "selected" : ""}`}
-                    ref={(ref: HTMLDivElement | null) => {
-                        if (ref) listingRefs.current[listing.place_id] = ref;
-                        else delete listingRefs.current[listing.place_id];
-                    }}
+                    className={`listing-card ${selectedLocation?.place_id === listing.place_id ? "selected" : ""}`}
+                    // ref={ref => {
+                    //     if (ref) listingRefs.current[listing.place_id] = ref;
+                    //     else delete listingRefs.current[listing.place_id];
+                    // }}
                 >
-                    <div
-                        className="clickable"
-                        onClick={() => handleClick(listing)}
-                    >
+                    <div className="clickable" onClick={() => handleClick(listing)}>
                         <h3 className="listing-name">{listing.name}</h3>
 
                         {listing.category && (
                             <p className="listing-category">
                                 {listing.category
-                                    ?.split('.')
-                                    ?.pop()
-                                    ?.replaceAll('_', ' ')
-                                    ?.replace(/\b\w/g, c => c.toUpperCase())}
+                                    .split(".")
+                                    .pop()
+                                    ?.replaceAll("_", " ")
+                                    .replace(/\b\w/g, c => c.toUpperCase())}
                             </p>
                         )}
                         <p className="listing-address">{listing.address}</p>
 
-                        {getToken() && (
+                        {userLoggedIn && (
                             <>
                                 <hr />
-
                                 <ListDropdown
                                     location={listing}
                                     handleDeleteLocation={handleDeleteLocation}
@@ -74,15 +70,12 @@ const Listings: React.FC<ListingsProps> = ({
                                 />
                             </>
                         )}
-
                     </div>
-                    <section className="button-container">
-
-                    </section>
+                    <section className="button-container"></section>
                 </section>
             ))}
         </section>
-    )
-}
+    );
+};
 
 export default Listings;

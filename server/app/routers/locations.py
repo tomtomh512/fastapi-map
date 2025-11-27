@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.models import List, Location, ListLocation, User
 from app.schemas.location import LocationCreate
@@ -6,17 +6,29 @@ from app.core.security import get_db, verify_token
 
 router = APIRouter(prefix="/locations", tags=["Locations"])
 
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token expired")
+
+    username = payload.get("sub")
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 @router.post("/{list_id}")
 def add_location(
-        list_id: int,
-        location_data: LocationCreate,
-        token: str = Depends(verify_token),
-        db: Session = Depends(get_db)
+    list_id: int,
+    location_data: LocationCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == token).first()
-
     lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
-
     if not lst:
         raise HTTPException(status_code=404, detail="List not found")
 
@@ -35,17 +47,15 @@ def add_location(
 
     return {"message": f"Location added to list '{lst.name}'"}
 
+
 @router.delete("/{list_id}/{place_id}")
 def remove_location(
-        list_id: int,
-        place_id: str,
-        token: str = Depends(verify_token),
-        db: Session = Depends(get_db)
+    list_id: int,
+    place_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == token).first()
-
     lst = db.query(List).filter(List.id == list_id, List.user_id == user.id).first()
-
     if not lst:
         raise HTTPException(status_code=404, detail="List not found")
 
@@ -62,16 +72,14 @@ def remove_location(
 
     return {"message": "Location removed"}
 
+
 @router.get("/check-location/{place_id}")
 def check_location(
-        place_id: str,
-        token: str = Depends(verify_token),
-        db: Session = Depends(get_db)
+    place_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == token).first()
-
     user_lists = db.query(List).filter(List.user_id == user.id).all()
-
     location = db.query(Location).filter(Location.place_id == place_id).first()
 
     results = []

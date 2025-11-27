@@ -1,11 +1,9 @@
 import "../styles/UserList.css";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {getToken} from "../utils/tokenUtils.ts";
-import type {AxiosResponse} from "axios";
 import httpClient from "../httpClient.tsx";
 import {getAxiosErrorMessage} from "../utils/axiosError.ts";
-import type {List, Location, User} from "../types/types.ts";
+import type {List, Location, User} from "../types/types";
 import Listings from "./Listings.tsx";
 
 interface UserListProps {
@@ -21,93 +19,51 @@ const UserList: React.FC<UserListProps> = ({
                                                selectedLocation,
                                                setSelectedLocation,
                                                getLists,
-                                               setCurrentMarkers
+                                               setCurrentMarkers,
                                            }) => {
-
     const { listId } = useParams<{ listId: string }>();
     const [list, setList] = useState<List | null>(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        setSelectedLocation(undefined)
-    }, [setSelectedLocation]);
+    useEffect(() => setSelectedLocation(undefined), [setSelectedLocation]);
 
-    // Fetches specific list by ID
     useEffect(() => {
         const fetchList = async () => {
-            const token: string | null = getToken();
-
-            if (!token) {
-                setUser(null);
-                navigate("/");
-                return;
-            }
-
             try {
-                const response: AxiosResponse<List> = await httpClient.get(
-                    `${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`,
-                    {
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                setList(response.data)
-                setCurrentMarkers(response.data.locations);
-
+                const res = await httpClient.get(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`);
+                setList(res.data);
+                setCurrentMarkers(res.data.locations);
             } catch (error: unknown) {
-                const message: string = getAxiosErrorMessage(error);
-                console.error(message);
+                console.error(getAxiosErrorMessage(error));
                 navigate("/");
             }
-        }
+        };
 
-        if (listId){
-            fetchList();
-        }
-    }, [listId, navigate, setUser, setCurrentMarkers])
+        if (listId) fetchList();
+    }, [listId, navigate, setUser, setCurrentMarkers]);
 
     const handleDeleteList = async () => {
-        if (!listId) return;
+        if (!listId || !list) return;
 
-        if (list && list.is_default) {
+        if (list.is_default) {
             alert("Cannot delete a default list");
             return;
         }
 
-        const token = getToken();
-        if (!token) {
-            setUser(null);
-            navigate("/");
-            return;
-        }
-
         try {
-            await httpClient.delete(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`, {
-                headers: { "Authorization": `Bearer ${token}` },
-            });
-
+            await httpClient.delete(`${import.meta.env.VITE_SERVER_API_URL}/lists/${listId}`);
             await getLists();
             navigate("/profile");
-
-        } catch (error: unknown) {
-            const message = getAxiosErrorMessage(error);
-            console.error("Failed to delete list:", message);
+        } catch (err) {
+            console.error("Failed to delete list:", getAxiosErrorMessage(err));
         }
-    }
+    };
 
-    // Handles how to render when a location is deleted
     const handleDeleteLocation = (removedLocation: Location) => {
-        if (!list) {
-            return;
-        }
-
+        if (!list) return;
         setList({
             ...list,
-            locations: list.locations.filter(
-                (loc) => loc.place_id !== removedLocation.place_id
-            ),
+            locations: list.locations.filter(loc => loc.place_id !== removedLocation.place_id),
         });
     };
 
@@ -116,16 +72,13 @@ const UserList: React.FC<UserListProps> = ({
             {list && (
                 <>
                     <h1>{list.name}</h1>
-
-                    {list && !list.is_default && (
+                    {!list.is_default && (
                         <div>
                             <span className="remove-button" onClick={handleDeleteList}>
                                 Delete list
                             </span>
                         </div>
                     )}
-
-
                     {list.locations.length === 0 ? (
                         <h3 className="results-message">Nothing to display</h3>
                     ) : (
@@ -135,6 +88,7 @@ const UserList: React.FC<UserListProps> = ({
                             setSelectedLocation={setSelectedLocation}
                             handleDeleteLocation={handleDeleteLocation}
                             currentListId={listId}
+                            userLoggedIn={true}
                         />
                     )}
                 </>
